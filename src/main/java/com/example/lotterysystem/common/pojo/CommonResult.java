@@ -28,8 +28,9 @@ public class CommonResult<T> implements Serializable {
         result.msg="";
         return result;
     }
-    public static <T> CommonResult<T> error(Integer code,String msg){
-        Assert.isTrue(GlobalErrorCodeConstants.SUCCESS.getCode().equals(code),"code 不是错误的异常");
+    public static <T> CommonResult<T> error(Integer code, String msg) {
+        Assert.isTrue(!GlobalErrorCodeConstants.SUCCESS.getCode().equals(code),
+                "code 不是错误的异常");
         CommonResult<T> result=new CommonResult<>();
         result.code=code;
         result.msg=msg;
