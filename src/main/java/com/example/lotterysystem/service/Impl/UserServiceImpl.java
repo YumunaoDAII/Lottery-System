@@ -1,10 +1,12 @@
 package com.example.lotterysystem.service.Impl;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ServiceException;
 import com.example.lotterysystem.common.utils.RegexUtil;
 import com.example.lotterysystem.controller.param.UserRegisterParam;
 import com.example.lotterysystem.dao.dataobject.Encrypt;
+import com.example.lotterysystem.dao.dataobject.UserDO;
 import com.example.lotterysystem.dao.mapper.UserMapper;
 import com.example.lotterysystem.service.UserService;
 import com.example.lotterysystem.service.dto.UserRegisterDTO;
@@ -22,10 +24,19 @@ public class UserServiceImpl implements UserService {
         //校验注册信息
         checkRegisterInfo(param);
         //加密私密数据
+        UserDO userDO=new UserDO();
+        userDO.setUserName(param.getName());
+        userDO.setEmail(param.getMail());
+        userDO.setPhoneNumber(new Encrypt(param.getPhoneNumber()));
+        userDO.setIdentity(param.getIdentity());
+        if (StringUtils.hasText(param.getPassword())){
+            userDO.setPassword(DigestUtil.sha256Hex(param.getPassword()));
+        }
         //保存数据
+        userMapper.insert(userDO);
         //构造返回
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
-        userRegisterDTO.setUserId(12L);
+        userRegisterDTO.setUserId(userDO.getId());
         return userRegisterDTO;
     }
 

@@ -1,9 +1,8 @@
 package com.example.lotterysystem.dao.mapper;
 
 import com.example.lotterysystem.dao.dataobject.Encrypt;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.example.lotterysystem.dao.dataobject.UserDO;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
@@ -16,4 +15,8 @@ public interface UserMapper {
     int countByMail(@Param("email") String email);
     @Select("select count(*) from user where phone_number =#{phoneNumber}")
     int countByPhone(@Param("phoneNumber") Encrypt phoneNumber);
+    @Insert("insert into user (user_name,email,phone_number,password,identity)" +
+            "values (#{userName},#{email},#{phoneNumber},#{password},#{identity})")
+    @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
+    void insert(UserDO userDO);
 }
