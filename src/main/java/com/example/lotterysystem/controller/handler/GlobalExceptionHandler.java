@@ -2,6 +2,7 @@ package com.example.lotterysystem.controller.handler;
 
 import com.example.lotterysystem.common.errorcode.GlobalErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ControllerException;
+import com.example.lotterysystem.common.exception.ServiceException;
 import com.example.lotterysystem.common.pojo.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,8 +12,8 @@ import java.rmi.ServerException;
 @Slf4j
 @RestControllerAdvice   //捕获全局抛的异常
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = ServerException.class)
-    public CommonResult<?> serviceException(ServerException e){
+    @ExceptionHandler(value = ServiceException.class)
+    public CommonResult<?> serviceException(ServiceException e){
         //打印错误日志
         log.error("serviceException:{}",e);
         //构造错误结果
