@@ -3,22 +3,33 @@ package com.example.lotterysystem.service.Impl;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ServiceException;
+import com.example.lotterysystem.common.utils.JWTUtil;
 import com.example.lotterysystem.common.utils.RegexUtil;
+import com.example.lotterysystem.controller.param.UserLoginParam;
+import com.example.lotterysystem.controller.param.UserMessageLoginParam;
+import com.example.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.example.lotterysystem.controller.param.UserRegisterParam;
 import com.example.lotterysystem.dao.dataobject.Encrypt;
 import com.example.lotterysystem.dao.dataobject.UserDO;
 import com.example.lotterysystem.dao.mapper.UserMapper;
 import com.example.lotterysystem.service.UserService;
+import com.example.lotterysystem.service.VerificationCodeService;
+import com.example.lotterysystem.service.dto.UserLoginDTO;
 import com.example.lotterysystem.service.dto.UserRegisterDTO;
 import com.example.lotterysystem.service.enums.UserIdentityEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private VerificationCodeService verificationCodeService;
     @Override
     public UserRegisterDTO register(UserRegisterParam param) {
         //校验注册信息
@@ -39,6 +50,108 @@ public class UserServiceImpl implements UserService {
         userRegisterDTO.setUserId(userDO.getId());
         return userRegisterDTO;
     }
+
+    @Override
+    public UserLoginDTO login(UserLoginParam param) {
+        UserLoginDTO userLoginDTO;
+        //类型检查与转换
+        if (param instanceof UserPasswordLoginParam loginParam){
+            //密码登录
+            userLoginDTO=loginByUserPassword(loginParam);
+        }else if (param instanceof UserMessageLoginParam loginParam){
+            //短信验证码登录
+            userLoginDTO=loginByShortMessage(loginParam);
+        }else {
+            throw new ServiceException(ServiceErrorCodeConstants.LOGIN_INFO_NOT_EXIST);
+        }
+
+
+        return userLoginDTO;
+    }
+
+    /**
+     * 验证码登录
+     * @param loginParam
+     * @return
+     */
+
+    private UserLoginDTO loginByShortMessage(UserMessageLoginParam loginParam) {
+        if (!RegexUtil.checkMobile(loginParam.getLoginMobile())){
+            throw new ServiceException(ServiceErrorCodeConstants.PHONE_NUMBER_ERROR);
+        }
+        //获取用户数据
+        UserDO userDO = userMapper.selectByPhoneNumber(
+                new Encrypt(loginParam.getLoginMobile()));
+        if (null==userDO){
+            throw new ServiceException(ServiceErrorCodeConstants.USER_INFO_IS_EMPTY);
+        }else if (StringUtils.hasText(loginParam.getMandatoryIdentity())
+                &&!loginParam.getMandatoryIdentity().equalsIgnoreCase(userDO.getIdentity())){
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        }
+        //校验验证码
+        String code= verificationCodeService.getVerificationCode(loginParam.getLoginMobile());
+        if (!loginParam.getVerificationCode().equals(code)){
+            throw new ServiceException(ServiceErrorCodeConstants.VERIFICATION_CODE_ERROR);
+        }
+        //塞入返回值(JWT)
+        Map<String,Object> claim=new HashMap<>();
+        claim.put("id",userDO.getId());
+        claim.put("identity",userDO.getIdentity());
+        String token = JWTUtil.genJwt(claim);
+        UserLoginDTO userLoginDTO=new UserLoginDTO();
+        userLoginDTO.setToken(token);
+        userLoginDTO.setIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
+        return userLoginDTO;
+
+    }
+
+    /**
+     * 密码登录
+     * @param loginParam
+     * @return
+     */
+    private UserLoginDTO loginByUserPassword(UserPasswordLoginParam loginParam) {
+        UserDO userDO=null;
+        //判断手机还是邮箱登录
+        if (RegexUtil.checkMail(loginParam.getLoginName())){
+            //邮箱登录
+            //查询
+            userDO=userMapper.selectByMail(loginParam.getLoginName());
+        }else if (RegexUtil.checkMobile(loginParam.getLoginName())){
+            //手机号登录
+            userDO=userMapper.selectByPhoneNumber(new Encrypt(loginParam.getLoginName()));
+        }else {
+            throw new ServiceException(ServiceErrorCodeConstants.LOGIN_NOT_EXIST);
+        }
+        //校验登录信息
+        if (null==userDO){
+            throw new ServiceException(ServiceErrorCodeConstants.USER_INFO_IS_EMPTY);
+        }else if (StringUtils.hasText(loginParam.getMandatoryIdentity())
+                &&!loginParam.getMandatoryIdentity().equalsIgnoreCase(userDO.getIdentity())){
+            //强制身份登录，身份校验不通过
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        }else if (!DigestUtil.sha256Hex(loginParam.getPassword()).equals(userDO.getPassword())){
+            //校验密码不通过
+            throw new ServiceException(ServiceErrorCodeConstants.PASSWORD_ERROR);
+
+        }
+        //塞入返回值(JWT)
+        Map<String,Object> claim=new HashMap<>();
+        claim.put("id",userDO.getId());
+        claim.put("identity",userDO.getIdentity());
+        String token = JWTUtil.genJwt(claim);
+        UserLoginDTO userLoginDTO=new UserLoginDTO();
+        userLoginDTO.setToken(token);
+        userLoginDTO.setIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
+        return userLoginDTO;
+    }
+
+    /**
+     *
+     * @param param
+     * @return
+     */
+
 
     private void checkRegisterInfo(UserRegisterParam param) {
         if (null==param){

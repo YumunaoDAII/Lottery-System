@@ -4,10 +4,14 @@ import com.example.lotterysystem.common.errorcode.ControllerErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ControllerException;
 import com.example.lotterysystem.common.pojo.CommonResult;
 import com.example.lotterysystem.common.utils.JacksonUtil;
+import com.example.lotterysystem.controller.param.UserMessageLoginParam;
+import com.example.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.example.lotterysystem.controller.param.UserRegisterParam;
+import com.example.lotterysystem.controller.result.UserLoginResult;
 import com.example.lotterysystem.controller.result.UserRegisterResult;
 import com.example.lotterysystem.service.UserService;
 import com.example.lotterysystem.service.VerificationCodeService;
+import com.example.lotterysystem.service.dto.UserLoginDTO;
 import com.example.lotterysystem.service.dto.UserRegisterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +53,34 @@ public class UserController {
         logger.info("phoneNumber:{}",phoneNumber);
         verificationCodeService.sendVerificationCode(phoneNumber);
         return CommonResult.success(Boolean.TRUE);
+    }
+    @RequestMapping("/password/login")
+    public CommonResult<UserLoginResult> UserPasswordLogin(
+            @Validated @RequestBody UserPasswordLoginParam param){
+        logger.info("UserPasswordLogin UserPasswordLoginParam:{}",
+                JacksonUtil.writeValueAsString(param));
+        UserLoginDTO userLoginDTO = userService.login(param);
+        return CommonResult.success(convertToUserLoginResult(userLoginDTO));
+    }
+
+    private UserLoginResult convertToUserLoginResult(UserLoginDTO userLoginDTO) {
+        if (null==userLoginDTO){
+            throw new ControllerException(ControllerErrorCodeConstants.LOGIN_ERR);
+        }
+        UserLoginResult result=new UserLoginResult();
+        result.setToken(userLoginDTO.getToken());
+        result.setIdentity(userLoginDTO.getIdentity().name());
+        return result;
+    }
+
+    @RequestMapping("/message/login")
+    public CommonResult<UserLoginResult> UserMessageLogin(
+            @Validated @RequestBody UserMessageLoginParam param){
+        logger.info("UserMessageLogin UserMessageLoginParam:{}",
+                JacksonUtil.writeValueAsString(param));
+        UserLoginDTO userLoginDTO = userService.login(param);
+        return CommonResult.success(convertToUserLoginResult(userLoginDTO));
+
     }
 
 
