@@ -1,6 +1,7 @@
 package com.example.lotterysystem;
 
 import com.example.lotterysystem.common.utils.RedisUtil;
+import com.example.lotterysystem.service.VerificationCodeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,8 @@ public class RedisTest {
     private RedisUtil redisUtil;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private VerificationCodeService verificationCodeService;
     @Test
     void redisTest(){
         stringRedisTemplate.opsForValue().set("key1","value1");
@@ -27,5 +30,12 @@ public class RedisTest {
         redisUtil.del("key2");
         System.out.println(" key3" + redisUtil.get("key3"));
         System.out.println(" key2" + redisUtil.get("key2"));
+    }
+    @Test
+    void sendTest(){
+        verificationCodeService.sendVerificationCode("13245678909");
+        verificationCodeService.sendVerificationCode("13245678900");
+        System.out.println(verificationCodeService.getVerificationCode("13245678909"));
+        System.out.println(verificationCodeService.getVerificationCode("13245678900"));
     }
 }

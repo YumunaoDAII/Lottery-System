@@ -11,7 +11,7 @@ public class CaptchaUtil {
      */
     public static String getCaptchaUtil(int length){
         //自定义纯数字验证码
-        RandomGenerator randomGenerator=new RandomGenerator("0123456789",4);
+        RandomGenerator randomGenerator=new RandomGenerator("0123456789",length);
         LineCaptcha lineCaptcha = cn.hutool.captcha.CaptchaUtil.createLineCaptcha(200, 100);
         lineCaptcha.setGenerator(randomGenerator);
         //重新生成code
