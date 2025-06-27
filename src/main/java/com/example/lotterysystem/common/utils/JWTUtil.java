@@ -19,13 +19,12 @@ public class JWTUtil {
     /**
      * 密钥：Base64编码的密钥
      */
-    private static final String SECRET =
-            "eAzvOA8bSkeRQn1Tc1jazUGO1F7EsPVGbL0iv6NF41c";
+    private static final String SECRET = "SDKltwTl3SiWX62dQiSHblEB6O03FG9/vEaivFu6c6g=";
     /**
      * 生成安全密钥：将一个Base64编码的密钥解码并创建一个HMAC SHA密钥。
      */
-    private static final SecretKey SECRET_KEY =
-            Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(
+            Decoders.BASE64.decode(SECRET));
     /**
      * 过期时间(单位: 毫秒)
      */
@@ -38,8 +37,7 @@ public class JWTUtil {
         String jwt = Jwts.builder()
                 .setClaims(claim) // 自定义内容(载荷)
                 .setIssuedAt(new Date()) // 设置签发时间
-                .setExpiration(new Date(System.currentTimeMillis() +
-                        EXPIRATION)) // 设置过期时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION)) // 设置过期时间
                 .signWith(SECRET_KEY) // 签名算法
                 .compact();
         return jwt;
@@ -52,8 +50,7 @@ public class JWTUtil {
             return null;
         }
 // 创建解析器, 设置签名密钥
-        JwtParserBuilder jwtParserBuilder =
-                Jwts.parserBuilder().setSigningKey(SECRET_KEY);
+        JwtParserBuilder jwtParserBuilder = Jwts.parserBuilder().setSigningKey(SECRET_KEY);
         Claims claims = null;
         try {
 //解析token

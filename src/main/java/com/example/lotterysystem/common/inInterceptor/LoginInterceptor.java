@@ -7,6 +7,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+
+
+
+
 @Slf4j
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
@@ -19,9 +24,11 @@ public class LoginInterceptor implements HandlerInterceptor {
      * @return
      * @throws Exception
      */
+
+
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //获取请求头
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        // 获取请求头
         String token = request.getHeader("user_token");
         log.info("获取token:{}",token);
         log.info("获取路径:{}",request.getRequestURI());

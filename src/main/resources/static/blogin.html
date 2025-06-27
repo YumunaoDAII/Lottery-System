@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>管理员登录页面</title>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+<!--  <link rel="stylesheet" href="css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="./css/base.css">
-  <<link rel="stylesheet" href="./css/login.css">
+  <link rel="stylesheet" href="./css/login.css">
 </head>
 <body class="login-page">
 <!-- 登录框区域 -->
@@ -63,9 +64,9 @@
   </div>
 </div>
 
-<script src="js/jquery.min.js"></script>
-<script src="js/jquery.validate.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
 <script>
   $("#loginForm").validate({
     rules: {
@@ -89,7 +90,7 @@
       $('.error').text('');
       // 发送AJAX请求
       $.ajax({
-        url: 'password/login',
+        url: '/password/login',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({loginName: loginName,password: password,mandatoryIdentity:"ADMIN"}),
@@ -174,13 +175,13 @@
               url: '/message/login',
               type: 'POST',
               contentType: 'application/json',
-              data: JSON.stringify({loginMobile: loginMobile,verificationCode: verificationCode,mandatoryIdentity:"ADMIN"}),
+              data: JSON.stringify({loginMobile: loginMobile , verificationCode: verificationCode, mandatoryIdentity: "ADMIN"}),
               success: function(result) {
-                  if (result.code!=200){
-                      alert("登录失败！！"+result.msg);
-                  }else {
-                      localStorage.setItem("user_token",result.data.token);
-                      localStorage.setItem("user_identity","ADMIN");
+                  if (result.code!= 200) {
+                      alert("登录失败！" + result.msg);
+                  } else {
+                      localStorage.setItem("user_token", result.data.token);
+                      localStorage.setItem("user_identity", "ADMIN");
                       location.assign("admin.html");
                   }
               },

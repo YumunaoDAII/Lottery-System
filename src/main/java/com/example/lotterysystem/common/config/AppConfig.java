@@ -13,20 +13,23 @@ import java.util.List;
 public class AppConfig implements WebMvcConfigurer {
     @Autowired
     private LoginInterceptor loginInterceptor;
-    private final List<String> excludes= Arrays.asList(
+    private final List<String> excludes = Arrays.asList(
             "/**/*.html",
             "/css/**",
             "/js/**",
             "/pic/**",
             "/*.jpg",
+            "/*.png",
             "/favicon.ico",
             "/**/login",
             "/register",
-            "/verification-code/send"
-//            "/winning-records/show"
+            "/verification-code/send",
+            "/winning-records/show"
     );
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns(excludes);
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(excludes);
     }
 }
