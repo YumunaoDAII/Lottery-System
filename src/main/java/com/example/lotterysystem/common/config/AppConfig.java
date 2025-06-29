@@ -23,8 +23,8 @@ public class AppConfig implements WebMvcConfigurer {
             "/favicon.ico",
             "/**/login",
             "/register",
-            "/verification-code/send"
-//            "/winning-records/show"
+            "/verification-code/send",
+            "/winning-records/show"
     );
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
