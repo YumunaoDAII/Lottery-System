@@ -2,10 +2,8 @@ package com.example.lotterysystem.service.Impl;
 
 import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ServiceException;
-import com.example.lotterysystem.common.utils.CaptchaUtil;
-import com.example.lotterysystem.common.utils.RedisUtil;
-import com.example.lotterysystem.common.utils.RegexUtil;
-import com.example.lotterysystem.common.utils.SMSUtil;
+import com.example.lotterysystem.common.utils.*;
+import com.example.lotterysystem.dao.mapper.UserMapper;
 import com.example.lotterysystem.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,11 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     @Autowired
     private SMSUtil smsUtil;
     @Autowired
+    private MailUtil mailUtil;
+    @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public void sendVerificationCode(String phoneNumber) {
         //校验手机号
@@ -41,8 +43,6 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 //        smsUtil.sendMessage();
         //缓存验证码
         redisUtil.set(VERIFICATION_CODE_PREFIX+phoneNumber,code,VERIFICATION_CODE_TIMEOUT);
-
-
     }
 
     @Override
@@ -52,5 +52,39 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
             throw new ServiceException(ServiceErrorCodeConstants.PHONE_NUMBER_ERROR);
         }
         return redisUtil.get(VERIFICATION_CODE_PREFIX+phoneNumber);
+    }
+
+    @Override
+    public void sendVerificationEmailCode(String email) {
+        System.out.println("[Debug sendVerificationEmailCode]  email:"+email);
+        //校验邮箱号
+        if (!RegexUtil.checkMail(email)){
+            throw new ServiceException(ServiceErrorCodeConstants.MAIL_ERROR);
+        }
+        if (userMapper.countByMail(email)<1){
+            throw new ServiceException(ServiceErrorCodeConstants.USER_INFO_IS_EMPTY);
+        }
+        //生成随机验证码
+        String code = CaptchaUtil.getCaptchaUtil(4);
+        //{"code":"xxxx"}
+        Map<String,String> map=new HashMap<>();
+        map.put("code",code);
+
+
+        //发送验证码
+//        smsUtil.sendMessage();
+        mailUtil.sendMailCode(email,code);
+        //缓存验证码
+        redisUtil.set(VERIFICATION_CODE_PREFIX+email,code,VERIFICATION_CODE_TIMEOUT);
+    }
+
+    @Override
+    public String getVerificationEmailCode(String email) {
+        //校验邮箱
+        if (!RegexUtil.checkMail(email)){
+            throw new ServiceException(ServiceErrorCodeConstants.MAIL_ERROR);
+        }
+        //
+        return redisUtil.get(VERIFICATION_CODE_PREFIX+email);
     }
 }

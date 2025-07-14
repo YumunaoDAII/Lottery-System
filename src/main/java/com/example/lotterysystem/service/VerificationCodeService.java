@@ -13,4 +13,11 @@ public interface VerificationCodeService {
      * @return
      */
     String getVerificationCode(String phoneNumber);
+
+    /**
+     * 发送验证码至邮箱
+     * @param email
+     */
+    void sendVerificationEmailCode(String email);
+    String getVerificationEmailCode(String email);
 }

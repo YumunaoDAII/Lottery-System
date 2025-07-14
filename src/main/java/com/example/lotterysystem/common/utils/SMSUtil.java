@@ -10,11 +10,17 @@ import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.tencentcloudapi.sms.v20210111.models.SendStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class SMSUtil {
+    @Autowired
+    private JavaMailSender javaMailSender;
     private static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
 
     @Value(value = "${sms.secret-id}")
@@ -110,5 +116,25 @@ public class SMSUtil {
 
         // 实例化要请求产品的client对象,clientProfile是可选的
         return new SmsClient(cred, region, clientProfile);
+    }
+
+
+    @Value("${spring.mail.username}")
+    private String from;
+
+    public void testConnection() {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo("1324622996@qq.com"); // 发送到自己邮箱测试
+        message.setSubject("连接测试");
+        message.setText("这是一个连接测试邮件");
+
+        try {
+            javaMailSender.send(message);
+            System.out.println("连接测试成功");
+        } catch (Exception e) {
+            System.err.println("连接测试失败: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

@@ -5,10 +5,7 @@ import com.example.lotterysystem.common.errorcode.ServiceErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ServiceException;
 import com.example.lotterysystem.common.utils.JWTUtil;
 import com.example.lotterysystem.common.utils.RegexUtil;
-import com.example.lotterysystem.controller.param.UserLoginParam;
-import com.example.lotterysystem.controller.param.UserMessageLoginParam;
-import com.example.lotterysystem.controller.param.UserPasswordLoginParam;
-import com.example.lotterysystem.controller.param.UserRegisterParam;
+import com.example.lotterysystem.controller.param.*;
 import com.example.lotterysystem.dao.dataobject.Encrypt;
 import com.example.lotterysystem.dao.dataobject.UserDO;
 import com.example.lotterysystem.dao.mapper.UserMapper;
@@ -58,14 +55,12 @@ public class UserServiceImpl implements UserService {
         if (param instanceof UserPasswordLoginParam loginParam){
             //密码登录
             userLoginDTO=loginByUserPassword(loginParam);
-        }else if (param instanceof UserMessageLoginParam loginParam){
+        }else if (param instanceof UserEmailLoginParam loginParam){
             //短信验证码登录
-            userLoginDTO=loginByShortMessage(loginParam);
+            userLoginDTO=loginByEmail(loginParam);
         }else {
             throw new ServiceException(ServiceErrorCodeConstants.LOGIN_INFO_NOT_EXIST);
         }
-
-
         return userLoginDTO;
     }
 
@@ -90,6 +85,39 @@ public class UserServiceImpl implements UserService {
         }
         //校验验证码
         String code= verificationCodeService.getVerificationCode(loginParam.getLoginMobile());
+        if (!loginParam.getVerificationCode().equals(code)){
+            throw new ServiceException(ServiceErrorCodeConstants.VERIFICATION_CODE_ERROR);
+        }
+        //塞入返回值(JWT)
+        Map<String,Object> claim=new HashMap<>();
+        claim.put("id",userDO.getId());
+        claim.put("identity",userDO.getIdentity());
+        String token = JWTUtil.genJwt(claim);
+        UserLoginDTO userLoginDTO=new UserLoginDTO();
+        userLoginDTO.setToken(token);
+        userLoginDTO.setIdentity(UserIdentityEnum.forName(userDO.getIdentity()));
+        return userLoginDTO;
+    }
+    /**
+     * 邮箱验证码登录
+     * @param loginParam
+     * @return
+     */
+
+    private UserLoginDTO loginByEmail(UserEmailLoginParam loginParam) {
+        if (!RegexUtil.checkMail(loginParam.getLoginMail())){
+            throw new ServiceException(ServiceErrorCodeConstants.MAIL_ERROR);
+        }
+        //获取用户数据
+        UserDO userDO = userMapper.selectByMail(loginParam.getLoginMail());
+        if (null==userDO){
+            throw new ServiceException(ServiceErrorCodeConstants.USER_INFO_IS_EMPTY);
+        }else if (StringUtils.hasText(loginParam.getMandatoryIdentity())
+                &&!loginParam.getMandatoryIdentity().equalsIgnoreCase(userDO.getIdentity())){
+            throw new ServiceException(ServiceErrorCodeConstants.IDENTITY_ERROR);
+        }
+        //校验验证码
+        String code= verificationCodeService.getVerificationEmailCode(loginParam.getLoginMail());
         if (!loginParam.getVerificationCode().equals(code)){
             throw new ServiceException(ServiceErrorCodeConstants.VERIFICATION_CODE_ERROR);
         }

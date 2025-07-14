@@ -40,10 +40,10 @@
       <!-- 验证码登录框 -->
       <form id="codeForm" style="display: none;">
           <div class="form-group">
-              <label for="loginMobile">手机号</label>
-              <input class="form-control" type="text" id="loginMobile"
-                     name="loginMobile"
-                     required placeholder="请输入手机号">
+              <label for="loginMail">邮箱号</label>
+              <input class="form-control" type="text" id="loginMail"
+                     name="loginMail"
+                     required placeholder="请输入邮箱号">
           </div>
           <div class="form-group">
               <label for="verificationCode">验证码</label>
@@ -141,9 +141,9 @@
   })
   function getCode(){
       $.ajax({
-          url: '/verification-code/send',
+          url: '/verification-code/sendMail',
           type: 'GET',
-          data:{ phoneNumber:$('#loginMobile').val() },
+          data:{ email:$('#loginMail').val() },
           success: function(result) {
               if (result.code != 200) {
                   timer&&clearInterval(timer)
@@ -158,24 +158,24 @@
   // 验证码登录
   $("#codeForm").validate({
       rules: {
-          loginMobile: "required",
+          loginMail: "required",
           verificationCode:"required",
       },
       messages: {
-          loginMobile: "请输入您的手机号",
+          loginMail: "请输入您的邮箱号",
           verificationCode:  "请输入验证码",
       },
       submitHandler: function(form) {
-          var loginMobile = $('#loginMobile').val();
+          var loginMail = $('#loginMail').val();
           var verificationCode = $('#verificationCode').val();
           // 清除之前的错误消息
           $('.error').text('');
           // 发送AJAX请求
           $.ajax({
-              url: '/message/login',
+              url: '/email/login',
               type: 'POST',
               contentType: 'application/json',
-              data: JSON.stringify({loginMobile: loginMobile , verificationCode: verificationCode, mandatoryIdentity: "ADMIN"}),
+              data: JSON.stringify({loginMail: loginMail , verificationCode: verificationCode, mandatoryIdentity: "ADMIN"}),
               success: function(result) {
                   if (result.code!= 200) {
                       alert("登录失败！" + result.msg);

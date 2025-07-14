@@ -4,6 +4,7 @@ import com.example.lotterysystem.common.errorcode.ControllerErrorCodeConstants;
 import com.example.lotterysystem.common.exception.ControllerException;
 import com.example.lotterysystem.common.pojo.CommonResult;
 import com.example.lotterysystem.common.utils.JacksonUtil;
+import com.example.lotterysystem.controller.param.UserEmailLoginParam;
 import com.example.lotterysystem.controller.param.UserMessageLoginParam;
 import com.example.lotterysystem.controller.param.UserPasswordLoginParam;
 import com.example.lotterysystem.controller.param.UserRegisterParam;
@@ -54,6 +55,12 @@ public class UserController {
         verificationCodeService.sendVerificationCode(phoneNumber);
         return CommonResult.success(Boolean.TRUE);
     }
+    @RequestMapping("/verification-code/sendMail")
+    public CommonResult<Boolean> sendVerificationEmailCode(String email){
+        logger.info("email:{}",email);
+        verificationCodeService.sendVerificationEmailCode(email);
+        return CommonResult.success(Boolean.TRUE);
+    }
     @RequestMapping("/password/login")
     public CommonResult<UserLoginResult> UserPasswordLogin(
             @Validated @RequestBody UserPasswordLoginParam param){
@@ -80,8 +87,16 @@ public class UserController {
                 JacksonUtil.writeValueAsString(param));
         UserLoginDTO userLoginDTO = userService.login(param);
         return CommonResult.success(convertToUserLoginResult(userLoginDTO));
-
     }
+    @RequestMapping("/email/login")
+    public CommonResult<UserLoginResult> UserEmailLogin(
+            @Validated @RequestBody UserEmailLoginParam param){
+        logger.info("UserEmailLogin UserEmailLoginParam:{}",
+                JacksonUtil.writeValueAsString(param));
+        UserLoginDTO userLoginDTO = userService.login(param);
+        return CommonResult.success(convertToUserLoginResult(userLoginDTO));
+    }
+
 
 
 
