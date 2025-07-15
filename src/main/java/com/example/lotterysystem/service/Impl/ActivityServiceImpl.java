@@ -7,14 +7,17 @@ import com.example.lotterysystem.common.utils.RedisUtil;
 import com.example.lotterysystem.controller.param.CreateActivityParam;
 import com.example.lotterysystem.controller.param.CreatePrizeByActivityParam;
 import com.example.lotterysystem.controller.param.CreateUserByActivityParam;
+import com.example.lotterysystem.controller.param.PageParam;
 import com.example.lotterysystem.dao.dataobject.ActivityDO;
 import com.example.lotterysystem.dao.dataobject.ActivityPrizeDO;
 import com.example.lotterysystem.dao.dataobject.ActivityUserDO;
 import com.example.lotterysystem.dao.dataobject.PrizeDO;
 import com.example.lotterysystem.dao.mapper.*;
 import com.example.lotterysystem.service.ActivityService;
+import com.example.lotterysystem.service.dto.ActivityDTO;
 import com.example.lotterysystem.service.dto.ActivityDetailDTO;
 import com.example.lotterysystem.service.dto.CreateActivityDTO;
+import com.example.lotterysystem.service.dto.PageListDTO;
 import com.example.lotterysystem.service.enums.ActivityPrizeStatusEnum;
 import com.example.lotterysystem.service.enums.ActivityPrizeTiersEnum;
 import com.example.lotterysystem.service.enums.ActivityStatusEnum;
@@ -106,6 +109,25 @@ public class ActivityServiceImpl implements ActivityService {
         createActivityDTO.setActivityId(activityDO.getId());
         return createActivityDTO;
 
+    }
+
+    @Override
+    public PageListDTO<ActivityDTO> findActivityList(PageParam param) {
+        //获取总量
+        int total=activityMapper.count();
+
+        //获取当前页列表
+        List<ActivityDO> activityDOList=activityMapper.selectActivityList(param.offset(),param.getPageSize());
+        List<ActivityDTO> activityDTOList=activityDOList.stream()
+                .map(activityDO -> {
+                    ActivityDTO activityDTO = new ActivityDTO();
+                    activityDTO.setActivityId(activityDO.getId());
+                    activityDTO.setActivityName(activityDO.getActivityName());
+                    activityDTO.setDescription(activityDO.getDescription());
+                    activityDTO.setStatus(ActivityStatusEnum.forName(activityDO.getStatus()));
+                    return activityDTO;
+                }).collect(Collectors.toList());
+        return new PageListDTO<>(total,activityDTOList);
     }
 
     private void cacheActivity(ActivityDetailDTO detailDTO) {

@@ -2,7 +2,10 @@ package com.example.lotterysystem.service;
 
 
 import com.example.lotterysystem.controller.param.CreateActivityParam;
+import com.example.lotterysystem.controller.param.PageParam;
+import com.example.lotterysystem.service.dto.ActivityDTO;
 import com.example.lotterysystem.service.dto.CreateActivityDTO;
+import com.example.lotterysystem.service.dto.PageListDTO;
 
 public interface ActivityService {
 
@@ -13,4 +16,12 @@ public interface ActivityService {
      * @return
      */
     CreateActivityDTO createActivity(CreateActivityParam param);
+
+    /**
+     * 翻页查询活动（摘要）列表
+     * @param param
+     * @return
+     */
+    PageListDTO<ActivityDTO> findActivityList(PageParam param);
+
 }
