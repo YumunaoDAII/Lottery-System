@@ -130,6 +130,34 @@ public class ActivityServiceImpl implements ActivityService {
         return new PageListDTO<>(total,activityDTOList);
     }
 
+    @Override
+    public ActivityDetailDTO getActivityDetail(Long activityId) {
+        //查询Redis
+        if (null==activityId){
+            log.warn("查询活动详细信息失败，activityId为空");
+            return null;
+        }
+        ActivityDetailDTO detailDTO = grtActivityFromCache(activityId);
+        if (null!=detailDTO){
+            log.info("查询活动详细信息成功！detailDTO={}",JacksonUtil.writeValueAsString(detailDTO));
+            return detailDTO;
+        }
+        //如果redis不存在对应数据，查表
+        //活动表
+         ActivityDO aDo=activityMapper.selectById(activityId);
+        //活动奖品表
+        List<ActivityPrizeDO> apDOList= activityPrizeMapper.selectByActivityId(activityId);
+        //活动人员表
+        List<ActivityUserDO> auDOList=activityUserMapper.selectByActivityId(activityId);
+        //奖品表: 先获取要查询的奖品id
+        List<Long> prizeIds = apDOList.stream().map(ActivityPrizeDO::getPrizeId).collect(Collectors.toList());
+        List<PrizeDO> pDOList = prizeMapper.batchSelectByIds(prizeIds);
+        //整合活动详细详细，存放redis
+        detailDTO=convertToActivityDetailDTO(aDo,auDOList,pDOList,apDOList);
+        cacheActivity(detailDTO);
+        return detailDTO;
+    }
+
     private void cacheActivity(ActivityDetailDTO detailDTO) {
         //key: ACTIVITY_activityId
         //value: ActivityDetailDTO(json)
