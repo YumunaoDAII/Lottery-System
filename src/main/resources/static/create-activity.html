@@ -208,12 +208,13 @@
     // 获取奖品列表的函数
     function fetchPrizes() {
         $.ajax({
-            url: '',
-            type: '',
+            url: '/prize/find-list',
+            type: 'GET',
             dataType: 'json',
             data: { currentPage: 1, pageSize: 100},
             headers: {
                 // jwt
+                "user_token":userToken
             },
             success: function(result) {
                 var prizes = result.data.records;
@@ -283,12 +284,13 @@
     // 获取人员列表的函数
     function fetchUsers() {
         $.ajax({
-            url: '',
-            type: '',
+            url: '/base-user/find-list',
+            type: 'GET',
             dataType: 'json',
-            data: { identity: '' },
+            data: { identity: 'NORMAL' },
             headers: {
                 // jwt
+                "user_token":userToken
             },
             success: function(result) {
                 var users = result.data;
@@ -384,12 +386,13 @@
     // 提交活动信息接口
     function submitActivity(data){
         $.ajax({
-            url: '',
-            type: '',
+            url: '/activity/create',
+            type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
             headers: {
                 // jwt
+                "user_token":userToken
             },
             success: function(result) {
                 if (result.code != 200) {

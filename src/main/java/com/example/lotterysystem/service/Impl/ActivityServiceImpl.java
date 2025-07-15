@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -208,6 +209,9 @@ public class ActivityServiceImpl implements ActivityService {
                 .distinct() //去重
                 .collect(Collectors.toList());
         List<Long> existUserIds = userMapper.selectExistsByIds(userIds);
+        if (CollectionUtils.isEmpty(existUserIds)){
+            throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_USER_ERR);
+        }
         userIds.forEach(id->{
             if (!existUserIds.contains(id)){
                 throw new ServiceException(ServiceErrorCodeConstants.ACTIVITY_USER_ERR);
