@@ -35,4 +35,12 @@ public interface UserMapper {
               " order by id desc" +
               " </script>")  // 修正为闭合标签
       List<UserDO> selectUserListByIdentity(@Param("identity")String identity);
+
+      @Select("<script>" +
+              " select id from user where id in  " +
+              " <foreach item='items' collection='items' open='(' separator=',' clos=')'>" +
+              " #{item}" +
+              " </foreach>"+
+              " </script>")
+      List<Long> selectExistsByIds(@Param("items") List<Long> ids);
 }

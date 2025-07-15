@@ -6,7 +6,7 @@
     import com.example.lotterysystem.service.PictureService;
     import com.example.lotterysystem.service.PrizeService;
     import com.example.lotterysystem.service.dto.PageListDTO;
-    import com.example.lotterysystem.service.dto.PrizeDO;
+    import com.example.lotterysystem.dao.dataobject.PrizeDO;
     import com.example.lotterysystem.service.dto.PrizeDTO;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.stereotype.Service;

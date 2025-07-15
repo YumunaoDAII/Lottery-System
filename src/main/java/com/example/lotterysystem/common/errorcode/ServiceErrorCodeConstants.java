@@ -14,10 +14,16 @@ public interface ServiceErrorCodeConstants {
     ErrorCode LOGIN_NOT_EXIST=new ErrorCode(109,"登录方式不存在！");
     ErrorCode USER_INFO_IS_EMPTY=new ErrorCode(110,"用户信息为空！");
     ErrorCode VERIFICATION_CODE_ERROR=new ErrorCode(111,"验证码错误");
-    //---------活动模块错误码---------
-
 
     //---------奖品模块错误码---------
+
+
+    //---------活动模块错误码---------
+    ErrorCode CREATE_ACTIVITY_INFO_IS_EMPTY=new ErrorCode(300,"创建活动信息为空");
+    ErrorCode ACTIVITY_USER_ERR=new ErrorCode(301,"活动关联人员异常");
+    ErrorCode ACTIVITY_PRIZE_ERR=new ErrorCode(302,"活动关联奖品异常");
+    ErrorCode USER_PRIZE_AMOUNT_ERROR=new ErrorCode(303,"活动关联的奖品及人员数量设置异常");
+    ErrorCode ACTIVITY_PRIZE_TIERS_ERROR=new ErrorCode(304,"活动奖品等级设置错误");
 
 
     //---------抽奖错误码---------

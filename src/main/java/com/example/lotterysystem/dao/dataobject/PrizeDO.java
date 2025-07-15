@@ -1,4 +1,4 @@
-package com.example.lotterysystem.service.dto;
+package com.example.lotterysystem.dao.dataobject;
 
 import com.example.lotterysystem.dao.dataobject.BaseDO;
 import lombok.Data;

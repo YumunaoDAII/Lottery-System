@@ -8,7 +8,7 @@ public interface ControllerErrorCodeConstants {
     ErrorCode FIND_PRIZE_LIST_ERR=new ErrorCode(200,"查询奖品列表失败");
 
     //---------活动模块错误码---------
-
+    ErrorCode CREATE_ACTIVITY_ERR=new ErrorCode(300,"参加活动失败");
 
 
 

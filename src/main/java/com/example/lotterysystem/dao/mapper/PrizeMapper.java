@@ -1,6 +1,6 @@
 package com.example.lotterysystem.dao.mapper;
 
-import com.example.lotterysystem.service.dto.PrizeDO;
+import com.example.lotterysystem.dao.dataobject.PrizeDO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -16,4 +16,18 @@ public interface PrizeMapper {
     int count();
     @Select("select * from prize order by id desc limit #{offset},#{pageSize}")
     List<PrizeDO> selectPrizeList(@Param("offset") Integer offset,@Param("pageSize") Integer pageSize);
+    @Select("<script>" +
+            " select id from prize where id in  " +
+            " <foreach item='items' collection='items' open='(' separator=',' clos=')'>" +
+            " #{item}" +
+            " </foreach>"+
+            " </script>")
+    List<Long> selectExiseByIds(@Param("items") List<Long> ids);
+    @Select("<script>" +
+            " select * from prize where id in  " +
+            " <foreach item='items' collection='items' open='(' separator=',' clos=')'>" +
+            " #{item}" +
+            " </foreach>"+
+            " </script>")
+    List<PrizeDO> batchSelectByIds(@Param("items") List<Long> prizeIds);
 }
