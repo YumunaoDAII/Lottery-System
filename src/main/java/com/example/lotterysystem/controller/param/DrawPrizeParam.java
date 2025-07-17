@@ -15,15 +15,15 @@ public class DrawPrizeParam {
     private Long activityId;
     @NotNull(message = "奖品id不能为空")
     private Long prizeId;
-    @NotBlank(message = "奖品等级不能为空")
-    private String prizeTiers;
-    @NotNull(message = "中将时间不能为空")
+//    @NotBlank(message = "奖品等级不能为空")
+//    private String prizeTiers;
+    @NotNull(message = "中奖时间不能为空")
     private Date winningTime;
     @NotEmpty(message = "中奖者列表不能为空")
     @Valid
-    private List<winner> winnerList;
+    private List<Winner> winnerList;
     @Data
-    public static class winner{
+    public static class Winner {
         @NotNull(message = "中奖者id不能为空")
         private Long userId;
         @NotBlank(message = "中奖者姓名不能为空")

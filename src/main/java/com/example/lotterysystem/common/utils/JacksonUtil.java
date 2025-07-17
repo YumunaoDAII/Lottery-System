@@ -8,9 +8,11 @@ import org.springframework.boot.json.JsonParseException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-
+/**
+ * @author: yibo
+ */
 public class JacksonUtil {
-    private JacksonUtil(){
+    private JacksonUtil() {
 
     }
 
@@ -18,12 +20,15 @@ public class JacksonUtil {
      * 单例
      */
     private final static ObjectMapper OBJECT_MAPPER;
-    static{
-        OBJECT_MAPPER=new ObjectMapper();
+
+    static {
+        OBJECT_MAPPER = new ObjectMapper();
     }
-    private static ObjectMapper getObjectMapper(){
+
+    private static ObjectMapper getObjectMapper() {
         return OBJECT_MAPPER;
     }
+
     private static  <T> T tryParse(Callable<T> parser) {
         return tryParse(parser, JacksonException.class);
     }
@@ -42,30 +47,34 @@ public class JacksonUtil {
 
     /**
      * 序列化方法
+     *
      * @param object
      * @return
      */
-    public static String writeValueAsString(Object object){
-        return JacksonUtil.tryParse(()->{
+    public static String writeValueAsString(Object object) {
+        return JacksonUtil.tryParse(() -> {
             return JacksonUtil.getObjectMapper().writeValueAsString(object);
         });
     }
 
     /**
      * 反序列化
+     *
      * @param content
      * @param valueType
      * @return
      * @param <T>
      */
-    public static <T> T readValue(String content,Class<T> valueType){
-        return JacksonUtil.tryParse(()->{
-            return JacksonUtil.getObjectMapper().readValue(content,valueType);
+    public static <T> T readValue(String content, Class<T> valueType) {
+        return JacksonUtil.tryParse(() -> {
+            return JacksonUtil.getObjectMapper().readValue(content, valueType);
         });
+
     }
 
     /**
-     * 反序列化List
+     * 反序列化 List
+     *
      * @param content
      * @param paramClasses
      * @return
