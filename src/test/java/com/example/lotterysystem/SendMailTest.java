@@ -11,7 +11,7 @@ public class SendMailTest {
     private MailUtil mailUtil;
     @Test
     void setMailUtil(){
-        String mail="13246qq.com";
+        String mail="@qq.com";
         String code="1234";
         mailUtil.sendMailCode(mail,code);
     }

@@ -27,6 +27,10 @@ public interface ServiceErrorCodeConstants {
 
 
     //---------抽奖错误码---------
+    ErrorCode ACTIVITY_OR_PRIZE_IS_EMPTY=new ErrorCode(400,"抽奖活或动关联奖品不存在");
+    ErrorCode ACTIVITY_COMPLETED=new ErrorCode(401,"抽奖活或已完成");
+    ErrorCode ACTIVITY_PRIZE_COMPLETED=new ErrorCode(402,"抽奖活或已完成");
+    ErrorCode WINNER_PRIZE_AMOUNT_ERROR=new ErrorCode(403,"中奖人数与奖品数量不一致，无法抽奖");
 
 
     //---------图片错误码---------

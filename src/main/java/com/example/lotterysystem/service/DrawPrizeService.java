@@ -8,4 +8,10 @@ public interface DrawPrizeService {
      * @param param
      */
     void drawPrize(DrawPrizeParam param);
+
+    /**
+     * 校验抽奖请求
+     * @param param
+     */
+    void checkDrawPrize(DrawPrizeParam param);
 }
